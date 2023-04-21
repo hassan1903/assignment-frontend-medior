@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import {
   Button,
   Dialog,
@@ -30,10 +30,21 @@ export const AddNewModal = ({ columns, onClose, onSubmit, open, tags }: AddModal
       return acc
     }, {} as any)
   )
+  const [isDirty, setIsDirty] = useState(false)
+
+  useEffect(() => {
+    if (!open) {
+      setIsDirty(false)
+      setValues({ description: "", id: "", name: "", tags: [] })
+    }
+  }, [open])
+
   const handleSubmit = () => {
-    onSubmit(values)
-    setValues({ description: "", id: "", name: "", tags: [] })
-    onClose()
+    setIsDirty(true)
+    if (values.description && values.name && values.tags && values.tags.length > 0) {
+      onSubmit(values)
+      onClose()
+    }
   }
 
   return (
@@ -55,6 +66,21 @@ export const AddNewModal = ({ columns, onClose, onSubmit, open, tags }: AddModal
                     key={column.accessorKey}
                     label={column.header}
                     name={column.accessorKey}
+                    required
+                    error={
+                      isDirty && column.accessorKey
+                        ? !values[`${column.accessorKey}`] ||
+                          (values["tags"] && values["tags"].length <= 0)
+                        : undefined
+                    }
+                    helperText={
+                      isDirty &&
+                      column.accessorKey &&
+                      (!values[`${column.accessorKey}`] ||
+                        (values["tags"] && values["tags"].length <= 0))
+                        ? `${column.header} field is required.`
+                        : undefined
+                    }
                     value={values.tags || []}
                     select
                     SelectProps={{ multiple: true }}
@@ -75,6 +101,15 @@ export const AddNewModal = ({ columns, onClose, onSubmit, open, tags }: AddModal
                     key={column.accessorKey}
                     label={column.header}
                     name={column.accessorKey}
+                    required
+                    error={
+                      isDirty && column.accessorKey ? !values[`${column.accessorKey}`] : undefined
+                    }
+                    helperText={
+                      isDirty && column.accessorKey && !values[`${column.accessorKey}`]
+                        ? `${column.header} field is required.`
+                        : undefined
+                    }
                     onChange={e => setValues({ ...values, [e.target.name]: e.target.value })}
                   />
                 )

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useState } from "react"
 import { Box, Button, IconButton, Tooltip } from "@mui/material"
 import { Delete, Edit } from "@mui/icons-material"
 import { AddNewModal } from "components/AddNewModal"
@@ -13,34 +13,35 @@ import { type Tag } from "types/Tag"
 
 type DataTableProps = {
   columns: MRT_ColumnDef<Fruit | Vegetable>[]
+  enablePagination?: boolean
+  hideActions?: boolean
+  hideTopButtons?: boolean
   onCreate?: (val: Fruit | Vegetable) => void
   onDelete?: (id: string) => void
   onReset?: () => void
+  onRowSelected?: (row: Fruit | Vegetable) => void
   onUpdate?: (val: Fruit | Vegetable) => void
   tableData: Fruit[] | Vegetable[]
   tags?: Tag[]
-  validationErrors: {
+  validationErrors?: {
     [cellId: string]: string
   }
 }
 export const DataTable = ({
   columns,
+  enablePagination,
+  hideActions,
+  hideTopButtons,
   onCreate,
   onDelete,
   onReset,
+  onRowSelected,
   onUpdate,
   tableData,
   tags,
   validationErrors
 }: DataTableProps) => {
   const [addModalOpen, setAddModalOpen] = useState(false)
-  const [valErrors, setValErrors] = useState<{
-    [cellId: string]: string
-  }>(validationErrors)
-
-  useEffect(() => {
-    setValErrors(validationErrors)
-  }, [validationErrors])
 
   const handleAddNewRow = (values: Fruit | Vegetable) => {
     onCreate && onCreate(values)
@@ -49,14 +50,14 @@ export const DataTable = ({
   const handleSaveRowEdits: MaterialReactTableProps<
     Fruit | Vegetable
   >["onEditingRowSave"] = async ({ exitEditingMode, row, values }) => {
-    if (!Object.keys(valErrors).length) {
+    if (validationErrors && Object.keys(validationErrors).length <= 0) {
       onUpdate && onUpdate(values)
       exitEditingMode() //required to exit editing mode and close modal
     }
   }
 
-  const handleCancelRowEdits = () => {
-    setValErrors({})
+  const handleRowClick = (row: MRT_Row<Fruit | Vegetable>) => {
+    onRowSelected && onRowSelected(row.original)
   }
 
   const handleDeleteRow = useCallback(
@@ -70,65 +71,86 @@ export const DataTable = ({
   )
 
   return (
-    <div style={{ padding: "3rem" }}>
+    <>
       <MaterialReactTable
-        displayColumnDefOptions={{
-          "mrt-row-actions": {
-            muiTableHeadCellProps: {
-              align: "center"
-            },
-            size: 60
-          }
-        }}
+        displayColumnDefOptions={
+          hideActions
+            ? undefined
+            : {
+                "mrt-row-actions": {
+                  muiTableHeadCellProps: {
+                    align: "center"
+                  },
+                  size: 60
+                }
+              }
+        }
         columns={columns}
         data={tableData}
-        editingMode="modal"
+        editingMode={hideActions ? undefined : "modal"}
         enableColumnOrdering
+        enablePagination={enablePagination}
+        enableRowActions={!hideActions}
         enableDensityToggle={false}
         enableFullScreenToggle={false}
-        enableEditing
+        enableEditing={!hideActions}
         enableColumnFilters={false}
-        onEditingRowSave={handleSaveRowEdits}
-        onEditingRowCancel={handleCancelRowEdits}
-        renderRowActions={({ row, table }) => (
-          <Box sx={{ display: "flex", gap: "1rem", justifyContent: "center" }}>
-            <Tooltip arrow placement="left" title="Edit">
-              <IconButton onClick={() => table.setEditingRow(row)}>
-                <Edit />
-              </IconButton>
-            </Tooltip>
-            <Tooltip arrow placement="right" title="Delete">
-              <IconButton color="error" onClick={() => handleDeleteRow(row)}>
-                <Delete />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        )}
-        renderTopToolbarCustomActions={() => (
-          <div>
-            <Button color="primary" onClick={() => setAddModalOpen(true)} variant="contained">
-              {"Add New"}
-            </Button>
-            <Button
-              sx={{ marginLeft: "1.25rem" }}
-              color="secondary"
-              onClick={() => {
-                onReset && onReset()
-              }}
-              variant="contained"
-            >
-              {"Reset"}
-            </Button>
-          </div>
-        )}
+        globalFilterFn="contains"
+        onEditingRowSave={hideActions ? undefined : handleSaveRowEdits}
+        // onEditingRowCancel={hideActions ? undefined : handleCancelRowEdits}
+        muiTableBodyRowProps={({ row }) => ({
+          onClick: onRowSelected ? () => handleRowClick(row) : undefined,
+          sx: onRowSelected ? { cursor: "pointer" } : undefined
+        })}
+        renderRowActions={
+          hideActions
+            ? undefined
+            : ({ row, table }) => (
+                <Box sx={{ display: "flex", gap: "1rem", justifyContent: "center" }}>
+                  <Tooltip arrow placement="left" title="Edit">
+                    <IconButton onClick={() => table.setEditingRow(row)}>
+                      <Edit />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip arrow placement="right" title="Delete">
+                    <IconButton color="error" onClick={() => handleDeleteRow(row)}>
+                      <Delete />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              )
+        }
+        renderTopToolbarCustomActions={
+          hideTopButtons
+            ? undefined
+            : () => (
+                <div>
+                  <Button color="primary" onClick={() => setAddModalOpen(true)} variant="contained">
+                    {"Add New"}
+                  </Button>
+                  <Button
+                    sx={{ marginLeft: "1.25rem" }}
+                    color="secondary"
+                    onClick={() => {
+                      onReset && onReset()
+                    }}
+                    variant="contained"
+                  >
+                    {"Reset"}
+                  </Button>
+                </div>
+              )
+        }
       />
-      <AddNewModal
-        columns={columns}
-        open={addModalOpen}
-        onClose={() => setAddModalOpen(false)}
-        onSubmit={handleAddNewRow}
-        tags={tags}
-      />
-    </div>
+      {hideTopButtons ? undefined : (
+        <AddNewModal
+          columns={columns}
+          open={addModalOpen}
+          onClose={() => setAddModalOpen(false)}
+          onSubmit={handleAddNewRow}
+          tags={tags}
+        />
+      )}
+    </>
   )
 }

@@ -57,6 +57,7 @@ export const Vegetables = () => {
         accessorKey: "id",
         header: "ID",
         enableColumnOrdering: false,
+        enableGlobalFilter: false,
         enableEditing: false, //disable editing on this column
         enableSorting: false,
         size: 200
@@ -120,6 +121,7 @@ export const Vegetables = () => {
         accessorKey: "isArchived",
         header: "Is Archived?",
         enableColumnOrdering: false,
+        enableGlobalFilter: false,
         size: 50,
         Cell: ({ renderedCellValue, row }: { renderedCellValue: any; row: MRT_Row<Vegetable> }) => {
           return (
