@@ -16,11 +16,13 @@ export class CRUD<T extends { id: string }> {
       ? JSON.parse(localStorage.getItem(this.name) as string)
       : this.initialData
   }
+
   addItem = (item: Omit<T, "id">) => {
     const newItem = { ...item, id: uuidv4() }
     localStorage.setItem(this.name, JSON.stringify([...this.getItems(), newItem as T]))
     return newItem
   }
+
   updateItem = (item: T) => {
     const items = this.getItems()
     const index = this.getItems().findIndex(({ id }) => item.id === id)
@@ -28,6 +30,14 @@ export class CRUD<T extends { id: string }> {
     localStorage.setItem(this.name, JSON.stringify(items))
     return item
   }
+
+  deleteItem = (id: string) => {
+    const items = this.getItems()
+    const index = this.getItems().findIndex(item => item.id === id)
+    items.splice(index, 1)
+    localStorage.setItem(this.name, JSON.stringify(items))
+  }
+
   reset = () => {
     localStorage.setItem(this.name, JSON.stringify(this.initialData))
   }
