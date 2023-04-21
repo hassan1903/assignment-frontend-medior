@@ -1,5 +1,5 @@
 export interface FruitsProps {}
 
-export const Fruits = ({}:FruitsProps)=>{
-    return (<></>);
-};
+export const Fruits = ({}: FruitsProps) => {
+  return <></>
+}

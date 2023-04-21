@@ -1,5 +1,5 @@
-import {Product} from "./Product";
+import { Product } from "./Product"
 
-export interface Vegetable extends Product{
-    tags?: string[];
+export interface Vegetable extends Product {
+  tags?: string[]
 }

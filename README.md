@@ -6,7 +6,7 @@ This assignment is supposed to be a conversational piece, and it doesn't have to
 Try not to spend more than four hours on it. We would like you to focus on the code, and not on the styling, so keep it simple
 and minimal, even using standard html elements would be fine. If you feel more comfortable using a UI library, feel free
 to do so. We use MUI in our project, but don't feel obliged to use it too if you are not familiar with it, we would rather have you
-spend your time thinking, and coding instead of reading documentation. 
+spend your time thinking, and coding instead of reading documentation.
 We want you to treat this assignment as a base for a bigger project, so try to keep the code clean, modular and extensible.
 Don't worry if you cannot finish the assignment in the preferred timeframe (4 hours), we just want to see how you think, code, and why
 you make the choices you make.
@@ -16,10 +16,10 @@ you make the choices you make.
 The assignment is to create a simple web application that has an admin panel and a public facing page. The admin panel
 consists of two pages that are a basic CRUD, one for managing fruits and one for managing vegetables. The public facing
 page is a simple page that lists all the products.
-We would prefer that you use functional components and hooks. There is already a mockup of a backend as RTK Query 
-endpoints, you can find it in the `src/app/api` folder, the endpoints have a fake delay so please also use loading 
-states where you think is necessary. The mockup backend just saves the changes on localstorage, and there is also a 
-function to reset the data to the initial state. There is also already a router and a basic layout of the app. 
+We would prefer that you use functional components and hooks. There is already a mockup of a backend as RTK Query
+endpoints, you can find it in the `src/app/api` folder, the endpoints have a fake delay so please also use loading
+states where you think is necessary. The mockup backend just saves the changes on localstorage, and there is also a
+function to reset the data to the initial state. There is also already a router and a basic layout of the app.
 
 ### Admin panel
 
@@ -73,5 +73,3 @@ amount and remove that product from the cart. The cart contents should be saved 
 
 The recently viewed section should show a list of the last 5 products that the user has viewed, clicking on a product in
 the list should bring that product in the product view. The recently viewed products should be saved in a redux state.
-
-

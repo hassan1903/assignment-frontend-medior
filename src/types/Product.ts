@@ -1,6 +1,6 @@
 export interface Product {
-    id: string;
-    name: string;
-    description: string;
-    isArchived?: boolean;
+  id: string
+  name: string
+  description: string
+  isArchived?: boolean
 }
