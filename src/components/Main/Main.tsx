@@ -56,7 +56,13 @@ export const Main = () => {
   const { data: vegetableTags } = useGetVegetableTagsQuery()
   const [selectedRow, setSelectedRow] = useState<Fruit | Vegetable>()
   const products = useMemo(
-    () => (fruits && vegetables ? [...fruits, ...vegetables] : []),
+    () =>
+      fruits && vegetables
+        ? [
+            ...fruits.filter(fruit => !fruit.isArchived),
+            ...vegetables.filter(veg => !veg.isArchived)
+          ]
+        : [],
     [fruits, vegetables]
   )
   const findType = useCallback(
